@@ -8,15 +8,30 @@ ITEMS = [
 ]
 
 
+def items():
+    return 200, {"items": ITEMS}
+
+
+def health():
+    return 200, {"status": "ok"}
+
+
+ROUTES = {
+    "/items": items,
+    "/health": health,
+}
+
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path == "/items":
-            return self.reply(200, {"items": ITEMS})
-        return self.reply(404, {"error": "not found"})
+        route = ROUTES.get(self.path)
+        if route is None:
+            return self.reply(404, {"error": "not found"})
+        return self.reply(*route())
 
-    def reply(self, code, obj):
+    def reply(self, status, obj):
         body = json.dumps(obj).encode() + b"\n"
-        self.send_response(code)
+        self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()

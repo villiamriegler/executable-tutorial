@@ -10,6 +10,16 @@
       "background": "background.sh",
       "foreground": "foreground.sh"
     },
+    "steps": [
+      {
+        "title": "The system",
+        "text": "step1.md"
+      },
+      {
+        "title": "Experiment 1: Kill the backend pod",
+        "text": "step2.md"
+      }
+    ],
     "assets": {
       "host01": [
         { "file": "**/*.*", "target": "/root/chaos" }

@@ -20,4 +20,17 @@ kubectl rollout status deploy/backend --timeout=180s
 kubectl rollout status deploy/frontend --timeout=180s
 status "services deployed"
 
+status "Installing Chaos Mesh..."
+command -v helm >/dev/null || curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+helm repo add chaos-mesh https://charts.chaos-mesh.org
+helm install chaos-mesh chaos-mesh/chaos-mesh --version 2.8.4 --namespace chaos-mesh --create-namespace \
+  --set chaosDaemon.runtime=containerd \
+  --set chaosDaemon.socketPath=/run/containerd/containerd.sock \
+  --set controllerManager.replicaCount=1 \
+  --set dashboard.create=false \
+  --set dnsServer.create=false
+kubectl rollout status -n chaos-mesh deploy/chaos-controller-manager --timeout=300s
+kubectl rollout status -n chaos-mesh ds/chaos-daemon --timeout=300s
+status "Chaos Mesh installed"
+
 touch /root/.setup-done

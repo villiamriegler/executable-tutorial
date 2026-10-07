@@ -1,47 +1,14 @@
-# Scratchpad
+# Chaos Engineering: Testing How Your Service Behaves When a Dependency Fails
 
-Log of the background setup:
+Pods die and networks fail in every system. Unit and integration tests say nothing about it, because they mock dependencies as healthy. Chaos engineering tests it directly: you state a hypothesis about how the system behaves under a failure, inject that failure into the running system, and measure what users see. If the hypothesis is wrong, you fix the system and run the same experiment again.
 
-```bash
-cat /root/setup.log
-```{{exec}}
+In this tutorial you do exactly that on a small Kubernetes system with [Chaos Mesh](https://chaos-mesh.org/): first by killing a pod, then by cutting the network to a dependency, and finally by turning the experiment into a test that runs automatically.
 
-What is running:
+**After this tutorial you can:**
 
-```bash
-kubectl get pods,svc
-```{{exec}}
+- state a hypothesis about a system's behaviour under failure and measure it from the user's side,
+- run pod-kill and network-partition experiments with Chaos Mesh,
+- explain why a pod that "comes back" still causes failed requests, and why a missing timeout turns an unreachable dependency into a full outage,
+- express a chaos experiment as a test that runs automatically after a deployment.
 
-The frontend page:
-
-```bash
-curl -s localhost:30080/
-```{{exec}}
-
-Call the backend from inside the cluster:
-
-```bash
-kubectl exec deploy/frontend -- wget -qO- http://backend:8080/items
-```{{exec}}
-
-Logs of the two services:
-
-```bash
-kubectl logs deploy/frontend
-```{{exec}}
-
-```bash
-kubectl logs deploy/backend
-```{{exec}}
-
-30 seconds of traffic with a summary at the end:
-
-```bash
-echo "GET http://localhost:30080/" | vegeta attack -rate=10 -duration=30s -timeout=2s | vegeta report
-```{{exec}}
-
-Memory and Helm, needed for the Chaos Mesh install:
-
-```bash
-free -m; helm version
-```{{exec}}
+The environment is being set up in the background. Continue when the terminal says `Setup finished.`

@@ -1,0 +1,11 @@
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: backend
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 1
