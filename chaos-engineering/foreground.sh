@@ -1,2 +1,2 @@
 # Waiting for setup to finish
-until [ -f /root/.setup-done ]; do sleep 1; done; clear; echo "Setup finished."
+until [ -f /root/.setup-pid ]; do sleep 1; done; while kill -0 $(cat /root/.setup-pid) 2>/dev/null; do clear; echo "*** Setting Up Environment ***"; echo; tail -n 1 /root/.setup-status 2>/dev/null; echo; tail -n 3 /root/setup.log | cut -c1-$(tput cols); sleep 1; done; clear; [ -f /root/.setup-done ] && echo "Setup finished." || echo "Setup failed, see /root/setup.log"
