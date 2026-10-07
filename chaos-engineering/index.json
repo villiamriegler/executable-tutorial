@@ -1,0 +1,19 @@
+{
+  "title": "Chaos Engineering: Testing How Your Service Behaves When a Dependency Fails",
+  "description": "Inject pod and network failures with Chaos Mesh, watch what users see, fix it, and turn the experiment into a test.",
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  },
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh",
+      "foreground": "foreground.sh"
+    },
+    "assets": {
+      "host01": [
+        { "file": "**/*.*", "target": "/root/chaos" }
+      ]
+    }
+  }
+}
