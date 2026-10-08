@@ -128,20 +128,28 @@ spec:
 
 ### Step 1: Run the test
 
-A workflow starts as soon as it is applied. Apply it and watch it until it finishes (about half a minute, `Ctrl+C` to stop watching):
+A workflow starts as soon as it is applied. Apply it and wait for it to finish, about half a minute:
 
 ```bash
 kubectl apply -f /root/chaos/experiments/test.yaml
-kubectl get workflow resilience-test -w
+kubectl wait --for=condition=Accomplished workflow/resilience-test --timeout=120s
 ```{{exec}}
 
-> Both experiments ran, every check passed, and the workflow finished. The system survives both failures.
-
-The checks are resources too, with their results:
+A workflow that finishes is not necessarily one that passed; an aborted workflow is also "accomplished". The result is in each node of the workflow, one per template:
 
 ```bash
-kubectl get statuschecks
+kubectl get workflownodes -l chaos-mesh.org/workflow=resilience-test -o custom-columns='NODE:.metadata.name,TYPE:.spec.type,ABORTED:.status.conditions[?(@.type=="Aborted")].status'
 ```{{exec}}
+
+> All eight nodes ran, including the three of the network partition, and none is aborted. Both experiments ran, every check passed.
+
+And in one place, on the workflow itself, which gets an abort annotation when a check fails:
+
+```bash
+kubectl get workflow resilience-test -o jsonpath='{.metadata.annotations.workflow\.chaos-mesh\.org/abort}'; echo
+```{{exec}}
+
+> Empty: not aborted. This one line is what a pipeline would check.
 
 ### Step 2: Break something and run it again
 
@@ -157,10 +165,12 @@ A workflow runs once, so delete it and apply it again:
 ```bash
 kubectl delete -f /root/chaos/experiments/test.yaml
 kubectl apply -f /root/chaos/experiments/test.yaml
-kubectl get workflow resilience-test -w
+kubectl wait --for=condition=Accomplished workflow/resilience-test --timeout=120s
+kubectl get workflownodes -l chaos-mesh.org/workflow=resilience-test -o custom-columns='NODE:.metadata.name,TYPE:.spec.type,ABORTED:.status.conditions[?(@.type=="Aborted")].status'
+kubectl get workflow resilience-test -o jsonpath='{.metadata.annotations.workflow\.chaos-mesh\.org/abort}'; echo
 ```{{exec}}
 
-> The workflow is aborted during the first experiment: `products-keep-working` failed. Nobody had to run vegeta or read a report, the test caught the regression.
+> Only the nodes of the first experiment exist, `products-keep-working` is aborted, and the workflow is annotated `true`. The pod kill caused downtime again, the check saw it, and the second experiment never ran. Nobody had to run vegeta or read a report.
 
 Put the fix back:
 
@@ -173,7 +183,7 @@ kubectl rollout status deployment backend
 
 The whole test is one file applied with `kubectl`, so it goes wherever your deployment goes. Two common places:
 
-- **The deploy stage of the CI pipeline.** After the manifests are applied to the staging cluster, the pipeline applies the workflow, waits for it to finish, and fails the stage if it was aborted. A change that removes a replica or a timeout never reaches production. In GitHub Actions that is one more step after the deploy:
+- **The deploy stage of the CI pipeline.** After the manifests are applied to the staging cluster, the pipeline applies the workflow, waits for it, and fails the stage if the workflow was aborted. A change that removes a replica or a timeout never reaches production. In GitHub Actions that is one more step after the deploy:
 
   ```yaml
   - name: Resilience test
@@ -181,6 +191,7 @@ The whole test is one file applied with `kubectl`, so it goes wherever your depl
       kubectl delete -f experiments/test.yaml --ignore-not-found
       kubectl apply -f experiments/test.yaml
       kubectl wait --for=condition=Accomplished workflow/resilience-test --timeout=120s
+      test "$(kubectl get workflow resilience-test -o jsonpath='{.metadata.annotations.workflow\.chaos-mesh\.org/abort}')" != "true"
   ```
 
 - **On a schedule.** Chaos Mesh has a `Schedule` resource that runs a workflow on a cron expression, for continuously verifying a staging environment regardless of when deployments happen.
