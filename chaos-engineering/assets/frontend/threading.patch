@@ -1,0 +1,19 @@
+--- a/frontend/app.py
++++ b/frontend/app.py
+@@ -1,7 +1,7 @@
+ import json
+ import os
+ import urllib.request
+-from http.server import BaseHTTPRequestHandler, HTTPServer
++from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+ from textwrap import indent
+ 
+ BACKEND = os.environ.get("BACKEND_URL", "http://backend:8080/items")
+@@ -87,5 +87,5 @@
+ 
+ 
+ print("listening on :8080", flush=True)
+-# Single-threaded: one request at a time, like one sync worker.
+-HTTPServer(("", 8080), Handler).serve_forever()
++# One thread per request.
++ThreadingHTTPServer(("", 8080), Handler).serve_forever()

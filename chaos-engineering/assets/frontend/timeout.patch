@@ -1,0 +1,11 @@
+--- a/frontend/app.py
++++ b/frontend/app.py
+@@ -35,7 +35,7 @@
+ 
+ 
+ def fetch_items():
+-    with urllib.request.urlopen(BACKEND) as response:
++    with urllib.request.urlopen(BACKEND, timeout=0.5) as response:
+         return json.load(response)["items"]
+ 
+ 

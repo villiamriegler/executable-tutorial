@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="240" viewBox="0 0 700 240" font-family="Helvetica, Arial, sans-serif" font-size="13" role="img" aria-label="Requests succeed, then no answer while the network is cut, then succeed again">
+  <defs>
+    <marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#455a64"/></marker>
+    <marker id="a-fail" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#d32f2f"/></marker>
+    <marker id="a-ok" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#2e7d32"/></marker>
+  </defs>
+  <line x1="120" y1="190" x2="690" y2="190" stroke="#455a64" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="690" y="210" text-anchor="end" font-size="12" fill="#607d8b">time</text>
+  <text x="108" y="80" text-anchor="end" font-size="12" fill="#263238" font-weight="bold">requests</text>
+  <text x="108" y="145" text-anchor="end" font-size="12" fill="#263238" font-weight="bold">network</text>
+  <rect x="120" y="60" width="168.0" height="30" rx="0" fill="#cfe8d0" stroke="#2e7d32" stroke-width="1.5" opacity="1.0"/>
+  <text x="204.0" y="80" text-anchor="middle" font-size="12" fill="#2e7d32" font-weight="bold">200</text>
+  <rect x="288.0" y="60" width="280.0" height="30" rx="0" fill="#eceff1" stroke="#607d8b" stroke-width="1.5" opacity="1.0"/>
+  <text x="428.0" y="80" text-anchor="middle" font-size="12" fill="#607d8b" font-weight="bold">no answer</text>
+  <rect x="568.0" y="60" width="112.0" height="30" rx="0" fill="#cfe8d0" stroke="#2e7d32" stroke-width="1.5" opacity="1.0"/>
+  <text x="624.0" y="80" text-anchor="middle" font-size="12" fill="#2e7d32" font-weight="bold">200</text>
+  <rect x="120" y="125" width="168.0" height="30" rx="0" fill="#ffffff" stroke="#7986cb" stroke-width="1.5" opacity="1.0"/>
+  <text x="204.0" y="145" text-anchor="middle" font-size="12" fill="#263238">connected</text>
+  <rect x="288.0" y="125" width="280.0" height="30" rx="0" fill="#ffffff" stroke="#d32f2f" stroke-width="1.5" stroke-dasharray="6,4" opacity="1.0"/>
+  <text x="428.0" y="145" text-anchor="middle" font-size="11" fill="#d32f2f">frontend → backend cut</text>
+  <rect x="568.0" y="125" width="112.0" height="30" rx="0" fill="#ffffff" stroke="#7986cb" stroke-width="1.5" opacity="1.0"/>
+  <text x="624.0" y="145" text-anchor="middle" font-size="12" fill="#263238">connected</text>
+  <line x1="288.0" y1="28" x2="288.0" y2="180" stroke="#d32f2f" stroke-width="1.5" stroke-dasharray="4,4"/>
+  <text x="282.0" y="22" text-anchor="end" font-size="12" fill="#d32f2f">Chaos Mesh cuts the network</text>
+  <line x1="568.0" y1="40" x2="568.0" y2="180" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="4,4"/>
+  <text x="574.0" y="46" text-anchor="start" font-size="12" fill="#2e7d32">network is back</text>
+</svg>

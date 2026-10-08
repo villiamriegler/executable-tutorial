@@ -60,8 +60,13 @@ def index():
     return 200, render_items(items)
 
 
+def health():
+    return 200, "ok\n"
+
+
 ROUTES = {
     "/": index,
+    "/health": health,
 }
 
 
