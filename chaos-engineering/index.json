@@ -13,17 +13,21 @@
     "steps": [
       {
         "title": "Chaos engineering and Chaos Mesh",
-        "text": "step1.md",
-        "verify": "verify1.sh"
+        "text": "step1/text.md",
+        "verify": "step1/verify.sh"
       },
       {
         "title": "Experiment 1: Kill the backend pod",
-        "text": "step2.md"
+        "text": "step2/text.md",
+        "verify": "step2/verify.sh"
       }
     ],
     "assets": {
       "host01": [
-        { "file": "**/*.*", "target": "/root/chaos" }
+        {
+          "file": "**/*.*",
+          "target": "/root/chaos"
+        }
       ]
     }
   }

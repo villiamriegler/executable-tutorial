@@ -1,35 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="700" height="240" viewBox="0 0 700 240" font-family="Helvetica, Arial, sans-serif" font-size="13" role="img" aria-label="Requests fail for about 1.6 seconds after the pod is deleted, until the new pod listens">
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="240" viewBox="0 0 700 240" font-family="Helvetica, Arial, sans-serif" font-size="13" role="img" aria-label="Requests succeed, fail while no backend pod is listening, then succeed again">
   <defs>
     <marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#455a64"/></marker>
     <marker id="a-fail" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#d32f2f"/></marker>
     <marker id="a-ok" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#2e7d32"/></marker>
   </defs>
   <line x1="120" y1="190" x2="690" y2="190" stroke="#455a64" stroke-width="1.6" marker-end="url(#a)"/>
-  <line x1="120" y1="186" x2="120" y2="194" stroke="#455a64"/>
-  <text x="120" y="210" text-anchor="middle" font-size="12" fill="#607d8b">0 s</text>
-  <line x1="232" y1="186" x2="232" y2="194" stroke="#455a64"/>
-  <text x="232" y="210" text-anchor="middle" font-size="12" fill="#607d8b">2 s</text>
-  <line x1="344" y1="186" x2="344" y2="194" stroke="#455a64"/>
-  <text x="344" y="210" text-anchor="middle" font-size="12" fill="#607d8b">4 s</text>
-  <line x1="456" y1="186" x2="456" y2="194" stroke="#455a64"/>
-  <text x="456" y="210" text-anchor="middle" font-size="12" fill="#607d8b">6 s</text>
-  <line x1="568" y1="186" x2="568" y2="194" stroke="#455a64"/>
-  <text x="568" y="210" text-anchor="middle" font-size="12" fill="#607d8b">8 s</text>
-  <line x1="680" y1="186" x2="680" y2="194" stroke="#455a64"/>
-  <text x="680" y="210" text-anchor="middle" font-size="12" fill="#607d8b">10 s</text>
+  <text x="690" y="210" text-anchor="end" font-size="12" fill="#607d8b">time</text>
   <text x="108" y="80" text-anchor="end" font-size="12" fill="#263238" font-weight="bold">requests</text>
   <text x="108" y="145" text-anchor="end" font-size="12" fill="#263238" font-weight="bold">backend pod</text>
-  <rect x="120" y="60" width="89.60000000000002" height="30" rx="0" fill="#fbd0cc" stroke="#d32f2f" stroke-width="1.5" opacity="1.0"/>
-  <text x="164.8" y="80" text-anchor="middle" font-size="12" fill="#d32f2f" font-weight="bold">502</text>
-  <rect x="209.60000000000002" y="60" width="470.4" height="30" rx="0" fill="#cfe8d0" stroke="#2e7d32" stroke-width="1.5" opacity="1.0"/>
-  <text x="444.8" y="80" text-anchor="middle" font-size="12" fill="#2e7d32" font-weight="bold">200</text>
-  <rect x="120" y="125" width="89.60000000000002" height="30" rx="0" fill="#ffffff" stroke="#607d8b" stroke-width="1.5" stroke-dasharray="6,4" opacity="1.0"/>
-  <text x="164.8" y="145" text-anchor="middle" font-size="11" fill="#607d8b">starting</text>
-  <rect x="209.60000000000002" y="125" width="470.4" height="30" rx="0" fill="#ffffff" stroke="#ef6c00" stroke-width="1.5" opacity="1.0"/>
-  <rect x="209.60000000000002" y="125" width="5" height="30" fill="#ef6c00"/>
-  <text x="444.8" y="145" text-anchor="middle" font-size="12" fill="#263238">new pod running</text>
-  <line x1="120" y1="28" x2="120" y2="180" stroke="#d32f2f" stroke-width="1.5" stroke-dasharray="4,4"/>
-  <text x="126" y="22" text-anchor="start" font-size="12" fill="#d32f2f">Chaos Mesh deletes the pod</text>
-  <line x1="209.60000000000002" y1="40" x2="209.60000000000002" y2="180" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="4,4"/>
-  <text x="215.60000000000002" y="46" text-anchor="start" font-size="12" fill="#2e7d32">new pod is listening (~1.6 s later)</text>
+  <rect x="120" y="60" width="168.0" height="30" rx="0" fill="#cfe8d0" stroke="#2e7d32" stroke-width="1.5" opacity="1.0"/>
+  <text x="204.0" y="80" text-anchor="middle" font-size="12" fill="#2e7d32" font-weight="bold">200</text>
+  <rect x="288.0" y="60" width="280.0" height="30" rx="0" fill="#fbd0cc" stroke="#d32f2f" stroke-width="1.5" opacity="1.0"/>
+  <text x="428.0" y="80" text-anchor="middle" font-size="12" fill="#d32f2f" font-weight="bold">502</text>
+  <rect x="568.0" y="60" width="112.0" height="30" rx="0" fill="#cfe8d0" stroke="#2e7d32" stroke-width="1.5" opacity="1.0"/>
+  <text x="624.0" y="80" text-anchor="middle" font-size="12" fill="#2e7d32" font-weight="bold">200</text>
+  <rect x="120" y="125" width="168.0" height="30" rx="0" fill="#ffffff" stroke="#ef6c00" stroke-width="1.5" opacity="1.0"/>
+  <rect x="120" y="125" width="5" height="30" fill="#ef6c00"/>
+  <text x="204.0" y="145" text-anchor="middle" font-size="12" fill="#263238">pod A running</text>
+  <rect x="288.0" y="125" width="280.0" height="30" rx="0" fill="#ffffff" stroke="#607d8b" stroke-width="1.5" stroke-dasharray="6,4" opacity="1.0"/>
+  <text x="428.0" y="145" text-anchor="middle" font-size="11" fill="#607d8b">starting</text>
+  <rect x="568.0" y="125" width="112.0" height="30" rx="0" fill="#ffffff" stroke="#ef6c00" stroke-width="1.5" opacity="1.0"/>
+  <rect x="568.0" y="125" width="5" height="30" fill="#ef6c00"/>
+  <text x="624.0" y="145" text-anchor="middle" font-size="12" fill="#263238">pod B running</text>
+  <line x1="288.0" y1="28" x2="288.0" y2="180" stroke="#d32f2f" stroke-width="1.5" stroke-dasharray="4,4"/>
+  <text x="282.0" y="22" text-anchor="end" font-size="12" fill="#d32f2f">Chaos Mesh deletes pod A</text>
+  <line x1="568.0" y1="40" x2="568.0" y2="180" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="4,4"/>
+  <text x="574.0" y="46" text-anchor="start" font-size="12" fill="#2e7d32">pod B is listening</text>
 </svg>

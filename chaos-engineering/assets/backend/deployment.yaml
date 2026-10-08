@@ -17,6 +17,9 @@ spec:
           image: python:3.12-alpine
           imagePullPolicy: IfNotPresent
           command: ["python", "-u", "/app/app.py"]
+          env:
+            - name: STARTUP_DELAY
+              value: "2"
           ports:
             - containerPort: 8080
           volumeMounts:

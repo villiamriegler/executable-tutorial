@@ -1,4 +1,6 @@
 import json
+import os
+import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 ITEMS = [
@@ -38,5 +40,9 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
 
+# Simulated startup time; real services often need longer to load data or warm up.
+delay = int(os.environ.get("STARTUP_DELAY", "0"))
+print(f"starting, listening in {delay}s", flush=True)
+time.sleep(delay)
 print("listening on :8080", flush=True)
 HTTPServer(("", 8080), Handler).serve_forever()
