@@ -1,14 +1,41 @@
 # Chaos Engineering: Testing How Your Service Behaves When a Dependency Fails
 
-Pods die and networks fail in every system. Unit and integration tests say nothing about it, because they mock dependencies as healthy. Chaos engineering tests it directly: you state a hypothesis about how the system behaves under a failure, inject that failure into the running system, and measure what users see. If the hypothesis is wrong, you fix the system and run the same experiment again.
+## Introduction
 
-In this tutorial you do exactly that on a small Kubernetes system with [Chaos Mesh](https://chaos-mesh.org/): first by killing a pod, then by cutting the network to a dependency, and finally by turning the experiment into a test that runs automatically.
+Chaos engineering is the practice of deliberately injecting failures into a running system, for example cutting the network to a dependency, to find out how it really behaves before your users find out for you. These failures are hard to test any other way: a mock can return an error, but it does not reproduce a request that hangs forever.
 
-**After this tutorial you can:**
+It lets you model the scenarios you never want to happen, like the database crashing, in a controlled way, and check that the application degrades gracefully instead of falling over. Sometimes that is a one-off exercise, but since resilience regresses as quietly as any other property (a refactor drops a timeout, say), the experiments can also be written as code and run in the delivery pipeline like any other test, so a change that makes the system fragile is caught before it reaches users.
 
-- state a hypothesis about a system's behaviour under failure and measure it from the user's side,
-- run pod-kill and network-partition experiments with Chaos Mesh,
-- explain why a pod that "comes back" still causes failed requests, and why a missing timeout turns an unreachable dependency into a full outage,
-- express a chaos experiment as a test that runs automatically after a deployment.
+## What you will do
 
-The environment is being set up in the background. Continue when the terminal says `Setup finished.`
+Chaos engineering follows a simple loop: state a hypothesis about what happens when a certain failure occurs, inject that failure, and check whether the system still behaves as the hypothesis says. If it does not, fix the system and run the same experiment again. In this tutorial you will:
+
+1. Kill a backend pod with Chaos Mesh and find out whether users notice.
+2. Cut the network between the frontend and the backend and see what a missing timeout does to the whole application.
+3. Turn these experiments into a test that runs on every deployment.
+
+## App architecture
+
+![Architecture](./images/architecture.svg)
+
+A `frontend` serves a web page with a product table, which it builds by calling the `backend`. They run as two Services in Kubernetes with one pod each; this will change as you go.
+
+The environment is being set up in the background. Once the terminal says `Setup finished.`, call the frontend:
+
+```bash
+curl -s localhost:30080/
+```{{exec}}
+
+and check the pods:
+
+```bash
+kubectl get pods
+```{{exec}}
+
+## Learning outcomes
+
+After this tutorial you can:
+
+- explain what chaos engineering is and what it is for,
+- use chaos engineering to test hypotheses about your system,
+- use chaos engineering to create tests that ensure your system's reliability.

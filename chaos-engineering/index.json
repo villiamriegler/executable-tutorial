@@ -12,8 +12,9 @@
     },
     "steps": [
       {
-        "title": "The system",
-        "text": "step1.md"
+        "title": "Chaos engineering and Chaos Mesh",
+        "text": "step1.md",
+        "verify": "verify1.sh"
       },
       {
         "title": "Experiment 1: Kill the backend pod",
