@@ -31,7 +31,7 @@ spec:
             app: backend
     - name: products-keep-working
       templateType: StatusCheck
-      deadline: 10s
+      deadline: 13s
       abortWithStatusCheck: true
       statusCheck:
         mode: Continuous
@@ -76,7 +76,7 @@ spec:
               app: backend
     - name: health-keeps-working
       templateType: StatusCheck
-      deadline: 15s
+      deadline: 18s
       abortWithStatusCheck: true
       statusCheck:
         mode: Continuous
@@ -93,7 +93,7 @@ spec:
             statusCode: "200"
     - name: products-fail-fast
       templateType: StatusCheck
-      deadline: 15s
+      deadline: 18s
       abortWithStatusCheck: true
       statusCheck:
         mode: Continuous

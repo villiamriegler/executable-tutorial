@@ -45,7 +45,7 @@ spec:
             app: backend
     - name: products-keep-working
       templateType: StatusCheck
-      deadline: 10s
+      deadline: 13s
       abortWithStatusCheck: true
       statusCheck:
         mode: Continuous
@@ -90,7 +90,7 @@ spec:
               app: backend
     - name: health-keeps-working
       templateType: StatusCheck
-      deadline: 15s
+      deadline: 18s
       abortWithStatusCheck: true
       statusCheck:
         mode: Continuous
@@ -107,7 +107,7 @@ spec:
             statusCode: "200"
     - name: products-fail-fast
       templateType: StatusCheck
-      deadline: 15s
+      deadline: 18s
       abortWithStatusCheck: true
       statusCheck:
         mode: Continuous
@@ -141,15 +141,15 @@ A workflow that finishes is not necessarily one that passed; an aborted workflow
 kubectl get workflownodes -l chaos-mesh.org/workflow=resilience-test -o custom-columns='NODE:.metadata.name,TYPE:.spec.type,ABORTED:.status.conditions[?(@.type=="Aborted")].status'
 ```{{exec}}
 
-> All eight nodes ran, including the three of the network partition, and none is aborted. Both experiments ran, every check passed.
+> All eight nodes ran, including the three of the network partition, and none is aborted (`<none>` on the chaos nodes just means the condition is never set there). Both experiments ran, every check passed.
 
-And in one place, on the workflow itself, which gets an abort annotation when a check fails:
+Chaos Mesh does not print a verdict, but it does put an abort annotation on the workflow when a check fails, and that is one line away from a verdict:
 
 ```bash
-kubectl get workflow resilience-test -o jsonpath='{.metadata.annotations.workflow\.chaos-mesh\.org/abort}'; echo
+[ "$(kubectl get workflow resilience-test -o jsonpath='{.metadata.annotations.workflow\.chaos-mesh\.org/abort}')" = "true" ] && echo "FAILED: a status check did not hold" || echo "PASSED: all status checks held"
 ```{{exec}}
 
-> Empty: not aborted. This one line is what a pipeline would check.
+> `PASSED`. This is the line a pipeline would run.
 
 ### Step 2: Break something and run it again
 
@@ -160,17 +160,18 @@ kubectl scale deployment backend --replicas=1
 kubectl rollout status deployment backend
 ```{{exec}}
 
-A workflow runs once, so delete it and apply it again:
+A workflow runs once, so delete it, and its nodes, and apply it again. (The nodes are cleaned up in the background; if a new workflow with the same name finds the old finished nodes, it considers itself done.)
 
 ```bash
 kubectl delete -f /root/chaos/experiments/test.yaml
+kubectl delete workflownodes -l chaos-mesh.org/workflow=resilience-test
 kubectl apply -f /root/chaos/experiments/test.yaml
 kubectl wait --for=condition=Accomplished workflow/resilience-test --timeout=120s
 kubectl get workflownodes -l chaos-mesh.org/workflow=resilience-test -o custom-columns='NODE:.metadata.name,TYPE:.spec.type,ABORTED:.status.conditions[?(@.type=="Aborted")].status'
-kubectl get workflow resilience-test -o jsonpath='{.metadata.annotations.workflow\.chaos-mesh\.org/abort}'; echo
+[ "$(kubectl get workflow resilience-test -o jsonpath='{.metadata.annotations.workflow\.chaos-mesh\.org/abort}')" = "true" ] && echo "FAILED: a status check did not hold" || echo "PASSED: all status checks held"
 ```{{exec}}
 
-> Only the nodes of the first experiment exist, `products-keep-working` is aborted, and the workflow is annotated `true`. The pod kill caused downtime again, the check saw it, and the second experiment never ran. Nobody had to run vegeta or read a report.
+> `FAILED`, and only the four nodes of the first experiment exist, all marked aborted. The pod kill caused downtime again, `products-keep-working` saw it, and the second experiment never ran. Nobody had to run vegeta or read a report.
 
 Put the fix back:
 
@@ -189,6 +190,7 @@ The whole test is one file applied with `kubectl`, so it goes wherever your depl
   - name: Resilience test
     run: |
       kubectl delete -f experiments/test.yaml --ignore-not-found
+      kubectl delete workflownodes -l chaos-mesh.org/workflow=resilience-test --ignore-not-found
       kubectl apply -f experiments/test.yaml
       kubectl wait --for=condition=Accomplished workflow/resilience-test --timeout=120s
       test "$(kubectl get workflow resilience-test -o jsonpath='{.metadata.annotations.workflow\.chaos-mesh\.org/abort}')" != "true"
