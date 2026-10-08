@@ -25,6 +25,11 @@
         "title": "Experiment 2: Cut the network to the backend",
         "text": "step3/text.md",
         "verify": "step3/verify.sh"
+      },
+      {
+        "title": "Putting it together: the experiments as a test",
+        "text": "step4/text.md",
+        "verify": "step4/verify.sh"
       }
     ],
     "assets": {

@@ -1,0 +1,110 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: resilience-test
+spec:
+  entry: entry
+  templates:
+    # Run the two experiments one after the other.
+    - name: entry
+      templateType: Serial
+      children:
+        - pod-dies
+        - network-partition
+
+    # Experiment 1: kill a backend pod; the product page must keep answering 200.
+    - name: pod-dies
+      templateType: Parallel
+      children:
+        - kill-backend-pod
+        - products-keep-working
+    - name: kill-backend-pod
+      templateType: PodChaos
+      deadline: 10s
+      podChaos:
+        action: pod-kill
+        mode: one
+        selector:
+          namespaces:
+            - default
+          labelSelectors:
+            app: backend
+    - name: products-keep-working
+      templateType: StatusCheck
+      deadline: 10s
+      abortWithStatusCheck: true
+      statusCheck:
+        mode: Continuous
+        type: HTTP
+        duration: 10s
+        intervalSeconds: 1
+        timeoutSeconds: 1
+        failureThreshold: 3
+        successThreshold: 1
+        http:
+          url: http://frontend.default.svc:8080/
+          method: GET
+          criteria:
+            statusCode: "200"
+
+    # Experiment 2: cut the network to the backend; /health must keep answering 200
+    # and the product page must answer 502 within a second instead of hanging.
+    - name: network-partition
+      templateType: Parallel
+      children:
+        - cut-network
+        - health-keeps-working
+        - products-fail-fast
+    - name: cut-network
+      templateType: NetworkChaos
+      deadline: 20s
+      networkChaos:
+        action: partition
+        mode: all
+        selector:
+          namespaces:
+            - default
+          labelSelectors:
+            app: frontend
+        direction: to
+        target:
+          mode: all
+          selector:
+            namespaces:
+              - default
+            labelSelectors:
+              app: backend
+    - name: health-keeps-working
+      templateType: StatusCheck
+      deadline: 15s
+      abortWithStatusCheck: true
+      statusCheck:
+        mode: Continuous
+        type: HTTP
+        duration: 15s
+        intervalSeconds: 1
+        timeoutSeconds: 1
+        failureThreshold: 3
+        successThreshold: 1
+        http:
+          url: http://frontend.default.svc:8080/health
+          method: GET
+          criteria:
+            statusCode: "200"
+    - name: products-fail-fast
+      templateType: StatusCheck
+      deadline: 15s
+      abortWithStatusCheck: true
+      statusCheck:
+        mode: Continuous
+        type: HTTP
+        duration: 15s
+        intervalSeconds: 1
+        timeoutSeconds: 1
+        failureThreshold: 3
+        successThreshold: 1
+        http:
+          url: http://frontend.default.svc:8080/
+          method: GET
+          criteria:
+            statusCode: "502"
