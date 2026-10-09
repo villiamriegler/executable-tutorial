@@ -146,7 +146,7 @@ spec:
 
 `failureThreshold: 3` means three failed probes in a row fail the check, so a single request that happens to be in flight when the pod dies does not fail the run. The `Suspend` steps order things inside each phase: the check is running before the pod is killed, and the network is cut before its checks start.
 
-### Step 1: Run the workflow
+## Run the workflow
 
 A workflow starts as soon as it is applied. Apply it and wait for it to finish, about half a minute:
 
@@ -170,35 +170,6 @@ Chaos Mesh does not print a verdict, but it does put an abort annotation on the 
 ```{{exec}}
 
 > `PASSED`.
-
-### Step 2: Break something and run it again
-
-The checks also tell you when something has regressed. Undo the fix from the first experiment:
-
-```bash
-kubectl scale deployment backend --replicas=1
-kubectl rollout status deployment backend
-```{{exec}}
-
-A workflow runs once, so delete it, and its nodes, and apply it again. (The nodes are cleaned up in the background; if a new workflow with the same name finds the old finished nodes, it considers itself done.)
-
-```bash
-kubectl delete -f /root/chaos/experiments/test.yaml
-kubectl delete workflownodes -l chaos-mesh.org/workflow=resilience-test
-kubectl apply -f /root/chaos/experiments/test.yaml
-kubectl wait --for=condition=Accomplished workflow/resilience-test --timeout=120s
-kubectl get workflownodes -l chaos-mesh.org/workflow=resilience-test -o custom-columns='NODE:.metadata.name,TYPE:.spec.type,ABORTED:.status.conditions[?(@.type=="Aborted")].status'
-[ "$(kubectl get workflow resilience-test -o jsonpath='{.metadata.annotations.workflow\.chaos-mesh\.org/abort}')" = "true" ] && echo "FAILED: a status check did not hold" || echo "PASSED: all status checks held"
-```{{exec}}
-
-> `FAILED`, and only the nodes of the first experiment exist, the check among them marked aborted. The pod kill caused downtime again, `products-keep-working` saw it, and the second experiment never ran. Nobody had to run vegeta or read a report.
-
-Put the fix back:
-
-```bash
-kubectl scale deployment backend --replicas=2
-kubectl rollout status deployment backend
-```{{exec}}
 
 ## Where this runs
 
