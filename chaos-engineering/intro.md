@@ -12,7 +12,7 @@ Chaos engineering follows a simple loop: state a hypothesis about what happens w
 
 1. Kill a backend pod with Chaos Mesh and find out whether users notice.
 2. Cut the network between the frontend and the backend and see what a missing timeout does to the whole application.
-3. Turn these experiments into a test that runs on every deployment.
+3. Chain the experiments into one workflow that checks both hypotheses in a single run.
 
 ## App architecture
 
@@ -38,4 +38,4 @@ After this tutorial you can:
 
 - explain what chaos engineering is and what it is for,
 - use chaos engineering to test hypotheses about your system,
-- use chaos engineering to create tests that ensure your system's reliability.
+- chain experiments into a workflow that checks your hypotheses for you.

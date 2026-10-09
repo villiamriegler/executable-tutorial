@@ -27,7 +27,7 @@
         "verify": "step3/verify.sh"
       },
       {
-        "title": "Putting it together: the experiments as a test",
+        "title": "Putting it together: chaining experiments",
         "text": "step4/text.md",
         "verify": "step4/verify.sh"
       }

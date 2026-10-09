@@ -13,22 +13,12 @@ spec:
         - network-partition
 
     # Experiment 1: kill a backend pod; the product page must keep answering 200.
+    # The check starts first; the pod is killed 3 seconds in, so the check sees the gap.
     - name: pod-dies
       templateType: Parallel
       children:
-        - kill-backend-pod
         - products-keep-working
-    - name: kill-backend-pod
-      templateType: PodChaos
-      deadline: 10s
-      podChaos:
-        action: pod-kill
-        mode: one
-        selector:
-          namespaces:
-            - default
-          labelSelectors:
-            app: backend
+        - kill-backend-pod-after-3s
     - name: products-keep-working
       templateType: StatusCheck
       deadline: 13s
@@ -46,15 +36,35 @@ spec:
           method: GET
           criteria:
             statusCode: "200"
+    - name: kill-backend-pod-after-3s
+      templateType: Serial
+      children:
+        - wait-3s
+        - kill-backend-pod
+    - name: wait-3s
+      templateType: Suspend
+      deadline: 3s
+    - name: kill-backend-pod
+      templateType: PodChaos
+      deadline: 5s
+      podChaos:
+        action: pod-kill
+        mode: one
+        selector:
+          namespaces:
+            - default
+          labelSelectors:
+            app: backend
 
     # Experiment 2: cut the network to the backend; /health must keep answering 200
     # and the product page must answer 502 within a second instead of hanging.
+    # The network is cut first; the checks start 3 seconds in, once the cut is in effect.
     - name: network-partition
       templateType: Parallel
       children:
         - cut-network
-        - health-keeps-working
-        - products-fail-fast
+        - health-keeps-working-after-3s
+        - products-fail-fast-after-3s
     - name: cut-network
       templateType: NetworkChaos
       deadline: 20s
@@ -74,14 +84,19 @@ spec:
               - default
             labelSelectors:
               app: backend
+    - name: health-keeps-working-after-3s
+      templateType: Serial
+      children:
+        - wait-3s
+        - health-keeps-working
     - name: health-keeps-working
       templateType: StatusCheck
-      deadline: 18s
+      deadline: 15s
       abortWithStatusCheck: true
       statusCheck:
         mode: Continuous
         type: HTTP
-        duration: 15s
+        duration: 12s
         intervalSeconds: 1
         timeoutSeconds: 1
         failureThreshold: 3
@@ -91,14 +106,19 @@ spec:
           method: GET
           criteria:
             statusCode: "200"
+    - name: products-fail-fast-after-3s
+      templateType: Serial
+      children:
+        - wait-3s
+        - products-fail-fast
     - name: products-fail-fast
       templateType: StatusCheck
-      deadline: 18s
+      deadline: 15s
       abortWithStatusCheck: true
       statusCheck:
         mode: Continuous
         type: HTTP
-        duration: 15s
+        duration: 12s
         intervalSeconds: 1
         timeoutSeconds: 1
         failureThreshold: 3
