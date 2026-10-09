@@ -39,6 +39,9 @@
           "target": "/root/chaos"
         }
       ]
+    },
+    "finish": {
+      "text": "finish.md"
     }
   }
 }
